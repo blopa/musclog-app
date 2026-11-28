@@ -1,10 +1,14 @@
 import {
   resolveAddNote,
+  resolveAskCoach,
   resolveCopyMeal,
   resolveGoTo,
+  resolveLogCardio,
   resolveLogMeal,
   resolveLogWeight,
+  resolveOpenCamera,
   resolveSearchFood,
+  resolveStartWorkout,
 } from '@/utils/voiceCommand/resolve';
 import type { VoiceSlotKey } from '@/utils/voiceCommand/schema';
 import type {
@@ -41,6 +45,8 @@ export type VoiceToolDefinition = {
   titleKey: string;
   /** Whole translation key of an example of what to say. */
   labelKey: string;
+  /** Offered only on a device with a camera. */
+  needsCamera?: boolean;
   /**
    * The model's own tool-call format (the downloaded model). Measured as a set: `order` is the
    * place the tool is offered in, `examples` the turns it is shown by (`order` among the tools).
@@ -57,6 +63,8 @@ export type VoiceToolDefinition = {
     logsFood?: boolean;
     /** What the 1.2B text model is shown instead, where its own wording measured better. */
     textModel?: { description: string; slots: Partial<Record<VoiceSlotKey, string>> };
+    /** Never offered to a downloaded model: a measurement found it routes this tool badly. */
+    unsupported?: boolean;
   };
   resolve: (command: VoiceCommand, context: VoiceResolveContext) => VoiceResolution;
 };
@@ -228,19 +236,93 @@ export const VOICE_TOOLS: Record<VoiceActionTool, VoiceToolDefinition> = {
     },
     resolve: resolveGoTo,
   },
+  ask_coach: {
+    effect: 'prefill',
+    promptLine:
+      'ask_coach: a question, or asking advice or an explanation (food, training, the app).',
+    promptExamples: [['How much protein do I need?', '{"tool":"ask_coach"}']],
+    titleKey: 'voiceInput.command.tool.askCoach',
+    labelKey: 'voiceInput.command.capability.askCoach',
+    native: {
+      description:
+        'Ask the coach, when the person asks a question or wants advice or an explanation.',
+      slots: {},
+      order: 6,
+      examples: { order: 6, turns: [{ say: 'How much protein do I need?', arguments: '{}' }] },
+    },
+    resolve: resolveAskCoach,
+  },
+  start_workout: {
+    effect: 'confirm',
+    promptLine: "start_workout: start a saved workout, or today's.",
+    promptExamples: [['Start my push workout', '{"tool":"start_workout"}']],
+    titleKey: 'voiceInput.command.tool.startWorkout',
+    labelKey: 'voiceInput.command.capability.startWorkout',
+    native: {
+      description: 'Start a workout, when the person asks to start or begin training.',
+      slots: {},
+      order: 7,
+      examples: { order: 7, turns: [{ say: 'Start my leg day', arguments: '{}' }] },
+    },
+    resolve: resolveStartWorkout,
+  },
+  log_cardio: {
+    effect: 'confirm',
+    promptLine:
+      'log_cardio: a walk or run already done, with distance or time. activity, day. No other sport.',
+    promptExamples: [['I ran 5 km in 30 minutes', '{"tool":"log_cardio","activity":"run"}']],
+    titleKey: 'voiceInput.command.tool.logCardio',
+    labelKey: 'voiceInput.command.capability.logCardio',
+    native: {
+      description:
+        'Record a walk or run the person did, with its distance or time. No other sport.',
+      slots: { activity: 'Walk or run.', day: 'The day it happened.' },
+      order: 8,
+      examples: {
+        order: 8,
+        turns: [{ say: 'I ran 5 km in 30 minutes', arguments: '{"activity":"run"}' }],
+      },
+    },
+    resolve: resolveLogCardio,
+  },
+  open_camera: {
+    effect: 'navigate',
+    promptLine: 'open_camera: open the camera. camera_mode if said: barcode, food_photo or label.',
+    promptExamples: [['Scan this barcode', '{"tool":"open_camera","camera_mode":"barcode"}']],
+    titleKey: 'voiceInput.command.tool.openCamera',
+    labelKey: 'voiceInput.command.capability.openCamera',
+    needsCamera: true,
+    native: {
+      description: 'Open the camera, to scan a barcode, photograph food or read a nutrition label.',
+      slots: { camera_mode: 'Only if said: what the camera is for.' },
+      order: 9,
+      examples: {
+        order: 9,
+        turns: [{ say: 'Scan this barcode', arguments: '{"camera_mode":"barcode"}' }],
+      },
+    },
+    resolve: resolveOpenCamera,
+  },
 };
 
 export const VOICE_NON_ACTIONS: Record<
   VoiceNonActionTool,
-  { promptLine: string; reason: VoiceRejection }
+  {
+    /** For the system prompt, which differs when a question has a tool of its own. */
+    promptLine: (offered: readonly VoiceActionTool[]) => string;
+    reason: VoiceRejection;
+  }
 > = {
   none: {
-    promptLine:
-      'none: not a request to do something: a question, a negation ("don\'t..."), a habit ("I usually...") or small talk.',
+    promptLine: (offered) => {
+      const question = offered.includes('ask_coach') ? '' : 'a question, ';
+
+      return `none: not a request to do something: ${question}a negation ("don't..."), a habit ("I usually...") or small talk.`;
+    },
     reason: 'noAction',
   },
   cant_determine_tool: {
-    promptLine:
+    promptLine: () =>
       'cant_determine_tool: a request that fits no tool, could be several, or does not say what it refers to. Never guess.',
     reason: 'cantDetermine',
   },

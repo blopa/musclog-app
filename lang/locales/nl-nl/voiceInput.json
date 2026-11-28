@@ -58,7 +58,11 @@
         "logWeight": "Mijn gewicht noteren",
         "logMeal": "Een maaltijd noteren",
         "addNote": "Een notitie maken",
-        "goTo": "Een scherm openen"
+        "goTo": "Een scherm openen",
+        "askCoach": "Vraag de coach",
+        "startWorkout": "Een training starten",
+        "logCardio": "Een wandeling of run loggen",
+        "openCamera": "De camera openen"
       },
       "askCoach": "Vraag het aan de coach",
       "wrongTask": "Verkeerde taak? Probeer een beter model.",
@@ -66,6 +70,8 @@
       "failed": "De spraakopdracht is mislukt. Probeer het opnieuw.",
       "mealTitle": "Je maaltijd",
       "mealLogged": "Maaltijd toegevoegd",
+      "workoutTitle": "Welke training?",
+      "workoutActive": "Er is al een training bezig.",
       "weight": {
         "title": "Je gewicht noteren",
         "field": "Gewicht",
@@ -78,7 +84,11 @@
         "logWeight": "„Ik weeg 82,4“",
         "logMeal": "„Ik had twee eieren en toast“",
         "addNote": "„Notitie: havermout kopen“",
-        "goTo": "„Toon mijn weekoverzicht“"
+        "goTo": "„Toon mijn weekoverzicht“",
+        "askCoach": "„Hoeveel eiwit heb ik nodig?“",
+        "startWorkout": "„Start mijn beentraining“",
+        "logCardio": "„Ik heb 5 km in 30 minuten gerend“",
+        "openCamera": "„Scan een barcode“"
       }
     },
     "tools": {
@@ -91,7 +101,8 @@
       "limitNote_few": "Deze AI kiest per keer uit {{count}} hulpmiddelen.",
       "limitNote_many": "Deze AI kiest per keer uit {{count}} hulpmiddelen.",
       "limitNote_other": "Deze AI kiest per keer uit {{count}} hulpmiddelen.",
-      "notUsed": "Niet gebruikt met deze AI"
+      "notUsed": "Niet gebruikt met deze AI",
+      "useRecommended": "Gebruik de aanbevolen volgorde"
     },
     "allow": "Toestaan",
     "notNow": "Niet nu"

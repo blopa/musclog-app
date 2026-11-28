@@ -2,6 +2,7 @@
  * Reads the body weight a spoken sentence names, so a voice command is checked against what was
  * actually said rather than what the model wrote. Pure: no React Native, no database.
  */
+import { toAsciiDigits } from '@/utils/voiceCommand/spokenNumbers';
 import type { VoiceWeightUnit } from '@/utils/voiceCommand/types';
 import { parseImportNumber } from '@/utils/workoutImport/parseNumber';
 
@@ -45,9 +46,6 @@ const WEIGHING_PREFIXES = [
 
 const COMBINING_MARKS = /[\u0300-\u036f]/g;
 
-/** Start of each non-ASCII decimal digit block (Arabic-Indic, Extended, Devanagari, full-width). */
-const DIGIT_BASES = [0x0660, 0x06f0, 0x0966, 0xff10];
-
 /** A run of digits with an optional decimal part, either separator. */
 const NUMBER_PATTERN = /\d+(?:[.,]\d+)?/g;
 
@@ -60,30 +58,9 @@ const WORD_PATTERN = /[a-zÀ-ɏЀ-ӿ]+/g;
 type Figure = { value: number; start: number; end: number };
 type Word = { text: string; start: number; end: number };
 
-/** Maps one character to ASCII where it is another script's digit or a decimal separator. */
-function toAsciiChar(ch: string): string {
-  const code = ch.charCodeAt(0);
-  for (const base of DIGIT_BASES) {
-    if (code >= base && code <= base + 9) {
-      return String.fromCharCode(0x30 + code - base);
-    }
-  }
-
-  // Arabic decimal separator and full-width full stop read as a point, full-width comma as a comma.
-  if (code === 0x066b || code === 0xff0e) {
-    return '.';
-  }
-
-  if (code === 0xff0c) {
-    return ',';
-  }
-
-  return ch;
-}
-
 /** ASCII digits, lowercase, and clock times removed (they are not weights). */
 function normalizeTranscript(transcript: string): string {
-  const ascii = transcript.split('').map(toAsciiChar).join('').toLowerCase();
+  const ascii = toAsciiDigits(transcript).toLowerCase();
   return ascii.replace(CLOCK_TIME_PATTERN, ' ');
 }
 

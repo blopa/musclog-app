@@ -6,6 +6,8 @@ import {
   MAX_VOICE_NOTE_CHARS,
   MAX_VOICE_WEIGHT_CHARS,
   VOICE_ACTION_TOOLS,
+  VOICE_ACTIVITIES,
+  VOICE_CAMERA_MODES,
   VOICE_DAYS,
   VOICE_MEALS,
   VOICE_NON_ACTION_TOOLS,
@@ -78,6 +80,18 @@ export const SLOTS = {
     kind: 'choice',
     choices: VOICE_SCREENS,
     description: 'go_to: the screen to open.',
+  },
+  activity: {
+    field: 'activity',
+    kind: 'choice',
+    choices: VOICE_ACTIVITIES,
+    description: 'log_cardio: walk or run.',
+  },
+  camera_mode: {
+    field: 'cameraMode',
+    kind: 'choice',
+    choices: VOICE_CAMERA_MODES,
+    description: 'open_camera: what the camera is for.',
   },
 } as const satisfies Record<string, Slot>;
 

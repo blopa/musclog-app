@@ -3,6 +3,7 @@ import { ActivityIndicator, Text, View } from 'react-native';
 
 import type { MealEstimateReview } from '@/components/camera/mealEstimateReview';
 import { CenteredModal } from '@/components/modals/CenteredModal';
+import { type LogCardioInitial, LogCardioModal } from '@/components/modals/LogCardioModal';
 import { type LogMealData, LogMealModal } from '@/components/modals/LogMealModal';
 import { type VoiceWeighIn, VoiceWeightSheet } from '@/components/modals/VoiceWeightSheet';
 import { Button } from '@/components/theme/Button';
@@ -12,6 +13,7 @@ import { useTheme } from '@/hooks/useTheme';
 import type { MealEstimateProgressLine } from '@/utils/mealEstimateProgress';
 import { VOICE_TOOLS } from '@/utils/voiceCommand/tools';
 import type { VoiceActionTool } from '@/utils/voiceCommand/types';
+import type { WorkoutChoice } from '@/utils/voiceCommand/workoutMatch';
 
 export type VoiceCommandModalState =
   /** The model is working out what the sentence asks for. */
@@ -29,7 +31,11 @@ export type VoiceCommandModalState =
       review: MealEstimateReview;
       day: Date;
       mealType: MealType;
-    };
+    }
+  /** Which workout was meant cannot be told: the person picks one to preview. */
+  | { kind: 'workoutChoice'; transcript: string; workouts: WorkoutChoice[] }
+  /** A walk or run waits to be checked and saved. */
+  | { kind: 'cardio'; transcript: string; initial: LogCardioInitial };
 
 const TITLE_KEYS: Record<VoiceCommandModalState['kind'], string> = {
   working: 'voiceInput.command.workingTitle',
@@ -37,6 +43,8 @@ const TITLE_KEYS: Record<VoiceCommandModalState['kind'], string> = {
   weight: 'voiceInput.command.weight.title',
   estimating: 'voiceInput.command.mealTitle',
   mealReview: 'voiceInput.command.mealTitle',
+  workoutChoice: 'voiceInput.command.workoutTitle',
+  cardio: 'cardio.title',
 };
 
 type VoiceCommandModalProps = {
@@ -53,13 +61,19 @@ type VoiceCommandModalProps = {
   onLogMeal: (data: LogMealData) => Promise<void>;
   /** The meal review closed, after logging or without it. */
   onMealReviewClose: () => void;
+  onPickWorkout: (workout: WorkoutChoice) => void;
+  /** The walk or run was saved; the sheet closes right after. */
+  onCardioLogged: () => void;
+  /** The walk or run sheet closed, after saving or without it. */
+  onCardioClose: () => void;
 };
 
 /**
  * Every stage of a voice command that needs the person's attention, in one modal: waiting for the
- * answer (cancellable), picking the tool they meant when no command could be run, and the sheets a
- * command opens here (the weigh-in and the meal review). Those are its children, never siblings:
- * iOS drops a second modal presented beside the first.
+ * answer (cancellable), picking the tool they meant when no command could be run or the workout they
+ * meant when several could be, and the sheets a command opens here (the weigh-in, the meal review
+ * and the walk or run). Those are its children, never siblings: iOS drops a second modal presented
+ * beside the first.
  */
 export function VoiceCommandModal({
   state,
@@ -70,6 +84,9 @@ export function VoiceCommandModal({
   onWeighInClose,
   onLogMeal,
   onMealReviewClose,
+  onPickWorkout,
+  onCardioLogged,
+  onCardioClose,
 }: VoiceCommandModalProps) {
   const theme = useTheme();
   const { t } = useTranslation();
@@ -128,13 +145,29 @@ export function VoiceCommandModal({
         {state?.kind === 'pick' ? (
           <View className="gap-2">
             <Text className="text-sm text-text-secondary">{t('voiceInput.command.pickHint')}</Text>
-            {state.offered.map((name) => (
+            {state.offered
+              // The footer's button asks the coach already.
+              .filter((name) => name !== 'ask_coach')
+              .map((name) => (
+                <ListRow
+                  key={name}
+                  variant="filled"
+                  title={t(VOICE_TOOLS[name].titleKey)}
+                  subtitle={t(VOICE_TOOLS[name].labelKey)}
+                  onPress={() => onPickTool(state.transcript, name)}
+                />
+              ))}
+          </View>
+        ) : null}
+        {state?.kind === 'workoutChoice' ? (
+          <View className="gap-2">
+            {state.workouts.map((workout) => (
               <ListRow
-                key={name}
+                key={`${workout.templateId}:${workout.planId ?? ''}`}
                 variant="filled"
-                title={t(VOICE_TOOLS[name].titleKey)}
-                subtitle={t(VOICE_TOOLS[name].labelKey)}
-                onPress={() => onPickTool(state.transcript, name)}
+                title={workout.name}
+                subtitle={workout.planName}
+                onPress={() => onPickWorkout(workout)}
               />
             ))}
           </View>
@@ -152,6 +185,14 @@ export function VoiceCommandModal({
           initialDate={state.day}
           initialMealType={state.mealType}
           onLogMeal={onLogMeal}
+        />
+      ) : null}
+      {state?.kind === 'cardio' ? (
+        <LogCardioModal
+          visible
+          initial={state.initial}
+          onLogged={onCardioLogged}
+          onClose={onCardioClose}
         />
       ) : null}
     </CenteredModal>

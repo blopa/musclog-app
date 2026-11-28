@@ -7,11 +7,16 @@ import { VOICE_ACTION_TOOLS, type VoiceActionTool } from '@/utils/voiceCommand/t
  * wrote for the coach can change which action runs.
  */
 
-const NON_ACTION_EXAMPLES: [said: string, command: string][] = [
-  ['What did I eat yesterday?', '{"tool":"none"}'],
-  ["Don't repeat yesterday's breakfast", '{"tool":"none"}'],
-  ['Do the thing from before', '{"tool":"cant_determine_tool"}'],
-];
+/** Examples that run nothing, but for the question, which is the coach's when that is offered. */
+function nonActionExamples(offered: readonly VoiceActionTool[]): [said: string, command: string][] {
+  const question = offered.includes('ask_coach') ? 'ask_coach' : 'none';
+
+  return [
+    ['What did I eat yesterday?', `{"tool":"${question}"}`],
+    ["Don't repeat yesterday's breakfast", '{"tool":"none"}'],
+    ['Do the thing from before', '{"tool":"cant_determine_tool"}'],
+  ];
+}
 
 /** The prompt naming the offered tools. `chosen`: the person picked which one they meant. */
 export function getVoiceCommandSystemPrompt(
@@ -21,10 +26,14 @@ export function getVoiceCommandSystemPrompt(
   const actions = VOICE_ACTION_TOOLS.filter((name) => offered.includes(name)).map(
     (name) => VOICE_TOOLS[name]
   );
-  const tools = [...actions, ...Object.values(VOICE_NON_ACTIONS)].map(
-    (tool) => `- ${tool.promptLine}`
-  );
-  const examples = [...actions.flatMap((tool) => tool.promptExamples), ...NON_ACTION_EXAMPLES];
+  const tools = [
+    ...actions.map((tool) => tool.promptLine),
+    ...Object.values(VOICE_NON_ACTIONS).map((tool) => tool.promptLine(offered)),
+  ].map((line) => `- ${line}`);
+  const examples = [
+    ...actions.flatMap((tool) => tool.promptExamples),
+    ...nonActionExamples(offered),
+  ];
 
   return [
     'Turn what a person said to the fitness app Musclog into one command. Reply with JSON {"commands":[command]} holding exactly one command.',

@@ -58,7 +58,11 @@
         "logWeight": "Log my weight",
         "logMeal": "Log a meal",
         "addNote": "Take a note",
-        "goTo": "Open a screen"
+        "goTo": "Open a screen",
+        "askCoach": "Ask the coach",
+        "startWorkout": "Start a workout",
+        "logCardio": "Log a walk or run",
+        "openCamera": "Open the camera"
       },
       "askCoach": "Ask the coach",
       "wrongTask": "Incorrect task? Try using a better model.",
@@ -66,6 +70,8 @@
       "failed": "The voice command failed. Try again.",
       "mealTitle": "Your meal",
       "mealLogged": "Meal logged",
+      "workoutTitle": "Which workout?",
+      "workoutActive": "A workout is already in progress.",
       "weight": {
         "title": "Log your weight",
         "field": "Weight",
@@ -78,7 +84,11 @@
         "logWeight": "\"I weigh 82.4\"",
         "logMeal": "\"I had two eggs and toast\"",
         "addNote": "\"Note: buy more oats\"",
-        "goTo": "\"Show my weekly review\""
+        "goTo": "\"Show my weekly review\"",
+        "askCoach": "\"How much protein do I need?\"",
+        "startWorkout": "\"Start my leg day\"",
+        "logCardio": "\"I ran 5 km in 30 minutes\"",
+        "openCamera": "\"Scan a barcode\""
       }
     },
     "tools": {
@@ -91,7 +101,8 @@
       "limitNote_few": "This AI chooses between {{count}} tools at a time.",
       "limitNote_many": "This AI chooses between {{count}} tools at a time.",
       "limitNote_other": "This AI chooses between {{count}} tools at a time.",
-      "notUsed": "Not used with this AI"
+      "notUsed": "Not used with this AI",
+      "useRecommended": "Use the recommended order"
     },
     "allow": "Allow",
     "notNow": "Not now"

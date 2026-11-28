@@ -1,10 +1,13 @@
+import type { CameraMode } from '@/constants/camera';
 import { localCalendarDayDate, localCalendarDayPlusDays } from '@/utils/calendarDate';
 import { mealTypeForHour } from '@/utils/mealTypeForHour';
 import { isFoodSaid, isMostlySaid } from '@/utils/voiceCommand/grounding';
 import { mealOfWord } from '@/utils/voiceCommand/mealWords';
+import { readSpokenActivity, readSpokenCardio } from '@/utils/voiceCommand/spokenCardio';
 import { mentionsBodyWeight, readSpokenWeight } from '@/utils/voiceCommand/spokenWeight';
 import {
   VOICE_WEEKDAYS,
+  type VoiceCameraMode,
   type VoiceCommand,
   type VoiceDay,
   type VoiceResolution,
@@ -22,6 +25,12 @@ import { LB_TO_KG } from '@/utils/workoutImport/parseNumber';
  */
 
 const DAY_OFFSET: Record<VoiceDay, number> = { today: 0, yesterday: -1, tomorrow: 1 };
+
+const CAMERA_MODES: Record<VoiceCameraMode, CameraMode> = {
+  barcode: 'barcode-scan',
+  food_photo: 'ai-meal-photo',
+  label: 'ai-label-scan',
+};
 
 /** A body weight outside this range is a misheard number, not a weigh-in. */
 const MIN_BODY_WEIGHT_KG = 20;
@@ -209,4 +218,54 @@ export function resolveGoTo(
   }
 
   return { ok: true, action: { kind: 'goTo', screen: command.screen ?? 'home' } };
+}
+
+/** A question or a request for advice: the whole sentence is what the coach is asked. */
+export function resolveAskCoach(
+  _command: VoiceCommand,
+  { transcript }: VoiceResolveContext
+): VoiceResolution {
+  return { ok: true, action: { kind: 'askCoach', text: transcript.trim() } };
+}
+
+export function resolveOpenCamera(command: VoiceCommand): VoiceResolution {
+  const mode = command.cameraMode ? CAMERA_MODES[command.cameraMode] : null;
+
+  return { ok: true, action: { kind: 'openCamera', mode } };
+}
+
+/** Which workout is meant is looked up on the phone: no saved name is ever sent to a model. */
+export function resolveStartWorkout(
+  _command: VoiceCommand,
+  { transcript }: VoiceResolveContext
+): VoiceResolution {
+  return { ok: true, action: { kind: 'startWorkout', said: transcript.trim() } };
+}
+
+/**
+ * The distance and the time are read from the transcript, never from the model, and one of them must
+ * have been said with its unit ("I went for a run" alone is not a log). Nobody logs a run that has
+ * not happened. The activity is the model's, else the one named, else a run.
+ */
+export function resolveLogCardio(
+  command: VoiceCommand,
+  { now, transcript, units, chosen }: VoiceResolveContext
+): VoiceResolution {
+  const { distanceM, durationS, measured } = readSpokenCardio(transcript, units);
+  if (!chosen && (!measured || command.day === 'tomorrow')) {
+    return { ok: false, reason: 'cantDetermine' };
+  }
+
+  const day = command.day === 'tomorrow' ? null : command.day;
+
+  return {
+    ok: true,
+    action: {
+      kind: 'logCardio',
+      day: relativeDay(day, now),
+      activity: command.activity ?? readSpokenActivity(transcript) ?? 'run',
+      distanceM,
+      durationS,
+    },
+  };
 }

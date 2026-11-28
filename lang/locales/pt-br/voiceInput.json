@@ -58,7 +58,11 @@
         "logWeight": "Registrar meu peso",
         "logMeal": "Registrar uma refeição",
         "addNote": "Fazer uma anotação",
-        "goTo": "Abrir uma tela"
+        "goTo": "Abrir uma tela",
+        "askCoach": "Perguntar ao coach",
+        "startWorkout": "Começar um treino",
+        "logCardio": "Registrar uma caminhada ou corrida",
+        "openCamera": "Abrir a câmera"
       },
       "askCoach": "Perguntar ao coach",
       "wrongTask": "Tarefa errada? Tente usar um modelo melhor.",
@@ -66,6 +70,8 @@
       "failed": "O comando de voz falhou. Tente de novo.",
       "mealTitle": "Sua refeição",
       "mealLogged": "Refeição registrada",
+      "workoutTitle": "Qual treino?",
+      "workoutActive": "Já há um treino em andamento.",
       "weight": {
         "title": "Registre seu peso",
         "field": "Peso",
@@ -78,7 +84,11 @@
         "logWeight": "“Peso 82,4”",
         "logMeal": "“Comi dois ovos e torrada”",
         "addNote": "“Nota: comprar mais aveia”",
-        "goTo": "“Mostre minha revisão semanal”"
+        "goTo": "“Mostre minha revisão semanal”",
+        "askCoach": "“De quanta proteína eu preciso?”",
+        "startWorkout": "“Começa meu treino de pernas”",
+        "logCardio": "“Corri 5 km em 30 minutos”",
+        "openCamera": "“Escaneie um código de barras”"
       }
     },
     "tools": {
@@ -91,7 +101,8 @@
       "limitNote_few": "Esta IA escolhe entre {{count}} ferramentas por vez.",
       "limitNote_many": "Esta IA escolhe entre {{count}} ferramentas por vez.",
       "limitNote_other": "Esta IA escolhe entre {{count}} ferramentas por vez.",
-      "notUsed": "Não usada com esta IA"
+      "notUsed": "Não usada com esta IA",
+      "useRecommended": "Usar a ordem recomendada"
     },
     "allow": "Permitir",
     "notNow": "Agora não"

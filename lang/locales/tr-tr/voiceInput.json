@@ -58,7 +58,11 @@
         "logWeight": "Kilomu kaydet",
         "logMeal": "Öğün kaydet",
         "addNote": "Not al",
-        "goTo": "Bir ekran aç"
+        "goTo": "Bir ekran aç",
+        "askCoach": "Koça sor",
+        "startWorkout": "Bir antrenman başlat",
+        "logCardio": "Yürüyüş veya koşu kaydet",
+        "openCamera": "Kamerayı aç"
       },
       "askCoach": "Koça sor",
       "wrongTask": "Yanlış işlem mi? Daha iyi bir model deneyin.",
@@ -66,6 +70,8 @@
       "failed": "Sesli komut başarısız oldu. Tekrar dene.",
       "mealTitle": "Öğünün",
       "mealLogged": "Öğün kaydedildi",
+      "workoutTitle": "Hangi antrenman?",
+      "workoutActive": "Zaten devam eden bir antrenman var.",
       "weight": {
         "title": "Kilonu kaydet",
         "field": "Kilo",
@@ -78,7 +84,11 @@
         "logWeight": "“Kilom 82,4”",
         "logMeal": "“İki yumurta ve tost yedim”",
         "addNote": "“Not: daha fazla yulaf al”",
-        "goTo": "“Haftalık özetimi göster”"
+        "goTo": "“Haftalık özetimi göster”",
+        "askCoach": "“Ne kadar proteine ihtiyacım var?”",
+        "startWorkout": "“Bacak günümü başlat”",
+        "logCardio": "“30 dakikada 5 km koştum”",
+        "openCamera": "“Bir barkod tara”"
       }
     },
     "tools": {
@@ -91,7 +101,8 @@
       "limitNote_few": "Bu yapay zekâ bir seferde {{count}} araç arasında seçim yapar.",
       "limitNote_many": "Bu yapay zekâ bir seferde {{count}} araç arasında seçim yapar.",
       "limitNote_other": "Bu yapay zekâ bir seferde {{count}} araç arasında seçim yapar.",
-      "notUsed": "Bu yapay zekâyla kullanılmaz"
+      "notUsed": "Bu yapay zekâyla kullanılmaz",
+      "useRecommended": "Önerilen sırayı kullan"
     },
     "allow": "İzin ver",
     "notNow": "Şimdi değil"

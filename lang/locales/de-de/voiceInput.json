@@ -58,7 +58,11 @@
         "logWeight": "Mein Gewicht eintragen",
         "logMeal": "Eine Mahlzeit eintragen",
         "addNote": "Eine Notiz schreiben",
-        "goTo": "Einen Bildschirm öffnen"
+        "goTo": "Einen Bildschirm öffnen",
+        "askCoach": "Den Coach fragen",
+        "startWorkout": "Ein Training starten",
+        "logCardio": "Einen Spaziergang oder Lauf eintragen",
+        "openCamera": "Die Kamera öffnen"
       },
       "askCoach": "Den Coach fragen",
       "wrongTask": "Falsche Aktion? Probier ein besseres Modell.",
@@ -66,6 +70,8 @@
       "failed": "Der Sprachbefehl ist fehlgeschlagen. Versuche es noch einmal.",
       "mealTitle": "Deine Mahlzeit",
       "mealLogged": "Mahlzeit eingetragen",
+      "workoutTitle": "Welches Training?",
+      "workoutActive": "Ein Training läuft bereits.",
       "weight": {
         "title": "Dein Gewicht eintragen",
         "field": "Gewicht",
@@ -78,7 +84,11 @@
         "logWeight": "„Ich wiege 82,4“",
         "logMeal": "„Ich hatte zwei Eier und Toast“",
         "addNote": "„Notiz: Haferflocken kaufen“",
-        "goTo": "„Zeig mir meinen Wochenrückblick“"
+        "goTo": "„Zeig mir meinen Wochenrückblick“",
+        "askCoach": "„Wie viel Eiweiß brauche ich?“",
+        "startWorkout": "„Starte mein Beintraining“",
+        "logCardio": "„Ich bin 5 km in 30 Minuten gelaufen“",
+        "openCamera": "„Scan einen Barcode“"
       }
     },
     "tools": {
@@ -91,7 +101,8 @@
       "limitNote_few": "Diese KI wählt jeweils zwischen {{count}} Werkzeugen.",
       "limitNote_many": "Diese KI wählt jeweils zwischen {{count}} Werkzeugen.",
       "limitNote_other": "Diese KI wählt jeweils zwischen {{count}} Werkzeugen.",
-      "notUsed": "Mit dieser KI nicht genutzt"
+      "notUsed": "Mit dieser KI nicht genutzt",
+      "useRecommended": "Die empfohlene Reihenfolge verwenden"
     },
     "allow": "Erlauben",
     "notNow": "Nicht jetzt"

@@ -51,6 +51,7 @@ import { useIncomingOpenLink } from '@/hooks/useOpenLinkHandler';
 import { useSettings } from '@/hooks/useSettings';
 import { useTheme } from '@/hooks/useTheme';
 import { useWorkoutPlans } from '@/hooks/useWorkoutPlans';
+import { useWorkoutsVoiceActions } from '@/hooks/useWorkoutsVoiceActions';
 import { useWorkoutTemplateDetails } from '@/hooks/useWorkoutTemplateDetails';
 import { useWorkoutTemplates } from '@/hooks/useWorkoutTemplates';
 import { clearActiveWorkoutLogId } from '@/utils/activeWorkoutStorage';
@@ -223,6 +224,12 @@ export default function WorkoutsScreen() {
     exercises: previewExercises,
     isLoading: isLoadingPreview,
   } = useWorkoutTemplateDetails(previewTemplateId);
+
+  // A voice command that named a workout opens its preview, behind the area lock if one is set.
+  useWorkoutsVoiceActions({
+    openPreview: (templateId, planId) => setPreviewTarget({ planId, templateId }),
+    isPreviewOpen: isPreviewModalVisible,
+  });
 
   // Use reactive hook for workout templates with scope based on active filter
   const { templates, isLoading, error } = useWorkoutTemplates({

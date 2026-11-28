@@ -24,7 +24,11 @@ import { parseChosenCommand, parseVoiceCommands } from '@/utils/voiceCommand/par
 import { getVoiceCommandSystemPrompt } from '@/utils/voiceCommand/prompt';
 import { buildVoiceCommandSchema } from '@/utils/voiceCommand/schema';
 import { resolveVoiceCommand } from '@/utils/voiceCommand/tools';
-import { activeVoiceTools, parseVoiceToolSelection } from '@/utils/voiceCommand/toolSelection';
+import {
+  activeVoiceTools,
+  canOfferVoiceTool,
+  parseVoiceToolSelection,
+} from '@/utils/voiceCommand/toolSelection';
 import type {
   VoiceAction,
   VoiceActionTool,
@@ -94,11 +98,12 @@ async function requestCommands(
 }
 
 /**
- * Works out what a spoken sentence asks the app to do, among the tools the person chose (cut to
- * what the model in use can choose between). It only decides: nothing is written, and the model's
- * answer is relative words that code resolves against `now`. One request. Throws on a provider
- * failure (typed errors as they are, a spent allowance with its message) and `AiCancelledError` on
- * a cancel. With `tool` (the person's pick) the answer is always that tool's action.
+ * Works out what a spoken sentence asks the app to do, among the tools the person chose (those this
+ * phone can run, cut to what the model in use can choose between). It only decides: nothing is
+ * written, and the model's answer is relative words that code resolves against `now`. At most one
+ * request. Throws on a provider failure (typed errors as they are, a spent allowance with its
+ * message) and `AiCancelledError` on a cancel. With `tool` (the person's pick) the answer is always
+ * that tool's action.
  */
 export async function interpretVoiceCommand(
   transcript: string,
@@ -106,7 +111,8 @@ export async function interpretVoiceCommand(
     signal,
     now = new Date(),
     tool,
-  }: { signal?: AbortSignal; now?: Date; tool?: VoiceActionTool } = {}
+    hasCamera = true,
+  }: { signal?: AbortSignal; now?: Date; tool?: VoiceActionTool; hasCamera?: boolean } = {}
 ): Promise<VoiceCommandOutcome> {
   const config = await AiService.getAiConfig();
   if (!config) {
@@ -118,10 +124,15 @@ export async function interpretVoiceCommand(
       SettingsService.get(SETTINGS.voiceCommandTools),
       SettingsService.getUnits(),
     ]);
-    const offered = activeVoiceTools(
-      parseVoiceToolSelection(stored),
-      providerPolicyFor(config).maxVoiceTools
-    );
+    const { maxVoiceTools, nativeToolCalls } = providerPolicyFor(config);
+    const available = (name: VoiceActionTool) =>
+      canOfferVoiceTool(name, { hasCamera, nativeModel: Boolean(nativeToolCalls) });
+    const offered = activeVoiceTools(parseVoiceToolSelection(stored), maxVoiceTools, available);
+    // The camera or the model may have changed since the tool was picked.
+    if (tool && !available(tool)) {
+      return { kind: 'rejected', reason: 'cantDetermine', offered };
+    }
+
     // A picked tool was offered a moment ago; it stays usable if the choice changed since.
     const usable = tool && !offered.includes(tool) ? [...offered, tool] : offered;
     const commands = await requestCommands({ ...config, signal }, transcript, usable, tool);
@@ -140,6 +151,7 @@ export async function interpretVoiceCommand(
       now,
       transcript,
       weightUnit: units === 'imperial' ? 'lb' : 'kg',
+      units,
       chosen: Boolean(tool),
     });
 

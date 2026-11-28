@@ -59,13 +59,19 @@ function refusal(offered: readonly VoiceActionTool[]): string {
     : 'I can only do things in the app.';
 }
 
-/** The turns before the tool examples: a greeting, a question the model must not answer with a tool. */
+/**
+ * The turns before the tool examples: a greeting, then a sentence the model must not answer with a
+ * tool. That is a question, unless the coach is offered, which makes a question a request: then a
+ * statement.
+ */
 function examplePreamble(offered: readonly VoiceActionTool[]): LocalChatMessage[] {
+  const asksCoach = offered.includes('ask_coach');
+
   return [
     { role: 'user', content: 'Hi, my name is Anna' },
     { role: 'assistant', content: 'Hi Anna!' },
-    { role: 'user', content: 'What did I eat on Monday?' },
-    { role: 'assistant', content: refusal(offered) },
+    { role: 'user', content: asksCoach ? 'I slept badly last night' : 'What did I eat on Monday?' },
+    { role: 'assistant', content: asksCoach ? 'Sorry to hear that.' : refusal(offered) },
   ];
 }
 
@@ -110,6 +116,12 @@ const TEXT_MODEL_INSTRUCTION =
   'Call a tool only when the sentence asks the app to log, copy, open or write something. ' +
   'Otherwise reply "Okay." and call no tool. A greeting, thanks or a question is not a request.';
 
+/** The same, while the coach is offered: a question is then a request. */
+const TEXT_MODEL_INSTRUCTION_WITH_COACH =
+  'Call a tool only when the sentence asks the app to log, copy, open or write something, or asks ' +
+  'a question. Otherwise reply "Okay." and call no tool. A greeting, thanks or a statement is not ' +
+  'a request.';
+
 /**
  * What a downloaded model is given before the sentence. The 1.2B gets the instruction on a first
  * try, and the example turns once the person picked the tool (`chosen`): with them it called the
@@ -120,9 +132,15 @@ export function nativeVoiceMessages(
   chosen?: VoiceActionTool,
   model: NativeVoiceModel = 'main'
 ): LocalChatMessage[] {
-  return model === 'text' && !chosen
-    ? [{ role: 'system', content: TEXT_MODEL_INSTRUCTION }]
-    : nativeVoiceExamples(offered);
+  if (model !== 'text' || chosen) {
+    return nativeVoiceExamples(offered);
+  }
+
+  const content = offered.includes('ask_coach')
+    ? TEXT_MODEL_INSTRUCTION_WITH_COACH
+    : TEXT_MODEL_INSTRUCTION;
+
+  return [{ role: 'system', content }];
 }
 
 /** One command of the model's answer: its `tool` and the slots it filled. */

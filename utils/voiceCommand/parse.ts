@@ -57,6 +57,8 @@ function emptyCommand(tool: VoiceToolName): VoiceCommand {
     weight: null,
     text: null,
     screen: null,
+    cameraMode: null,
+    activity: null,
   };
 }
 

@@ -13,6 +13,7 @@ import { useTranslation } from 'react-i18next';
 
 import { useCameraAiProcessing } from '@/components/camera/useCameraAiProcessing';
 import { useMealTextEstimate } from '@/components/camera/useMealTextEstimate';
+import { useHasCamera } from '@/components/CameraView';
 import { useCoach } from '@/components/CoachContext';
 import type { LogMealData } from '@/components/modals/LogMealModal';
 import {
@@ -20,6 +21,8 @@ import {
   type VoiceCommandModalState,
 } from '@/components/modals/VoiceCommandModal';
 import { HOME_ROUTE, NAV_DESTINATIONS } from '@/components/navigation/navDestinations';
+import { useAppLock } from '@/context/AppLockContext';
+import { useSmartCamera } from '@/context/SmartCameraContext';
 import { useSnackbar } from '@/context/SnackbarContext';
 import { useMenstrualCycle } from '@/hooks/useMenstrualCycle';
 import { isNavItemAvailable } from '@/hooks/useNavigationItems';
@@ -28,12 +31,15 @@ import { useSettings } from '@/hooks/useSettings';
 import { useWrongTaskNotice } from '@/hooks/useVoiceActions';
 import { logTrackedMeal } from '@/services/trackedMealLogging';
 import { interpretVoiceCommand } from '@/services/voiceCommand';
+import { findSpokenWorkout } from '@/services/voiceWorkout';
 import { AiCancelledError, describeAiError } from '@/utils/aiErrors';
 import { aiReadiness } from '@/utils/aiReadiness';
-import { formatLocalCalendarDayIso } from '@/utils/calendarDate';
+import { combineLocalDateAndTime, formatLocalCalendarDayIso } from '@/utils/calendarDate';
 import { AiCreditsError } from '@/utils/coachAI';
+import { handleError } from '@/utils/handleError';
 import type { VoiceAction, VoiceActionTool, VoiceScreen } from '@/utils/voiceCommand/types';
 import { setPendingVoiceAction } from '@/utils/voiceCommand/voiceActionInbox';
+import type { WorkoutChoice } from '@/utils/voiceCommand/workoutMatch';
 
 type VoiceCommandContextType = {
   /** Whether a spoken sentence can be turned into an action right now. */
@@ -53,15 +59,18 @@ const FAILED_MESSAGE = { messageKey: 'voiceInput.command.failed' };
 /**
  * The one owner of a voice command, mounted once: each tab keeps its own copy of the bottom bar,
  * so the request, its modal and its outcome live here rather than in the button that was held. A
- * command for a screen is handed to it through the inbox; a weigh-in and a meal are confirmed in
- * sheets of this modal, so they never open over a tab the person has moved to.
+ * command for a screen is handed to it through the inbox; a weigh-in, a meal and a walk or run are
+ * confirmed in sheets of this modal, so they never open over a tab the person has moved to.
  */
 export function VoiceCommandProvider({ children }: { children: ReactNode }) {
   const router = useRouter();
   const { t, i18n } = useTranslation();
   const { showSnackbar } = useSnackbar();
   const { openCoach } = useCoach();
-  const { isAiConfigured, aiProvider } = useSettings();
+  const { isAiConfigured, aiProvider, isAiMealPhotoEnabled } = useSettings();
+  const { openCamera } = useSmartCamera();
+  const hasCamera = useHasCamera();
+  const { isLocked } = useAppLock();
   const onDeviceStatus = useOnDeviceStatus();
   const { isActive: isCycleActive } = useMenstrualCycle();
   const showWrongTaskNotice = useWrongTaskNotice();
@@ -77,6 +86,7 @@ export function VoiceCommandProvider({ children }: { children: ReactNode }) {
   const generationRef = useRef(0);
   const abortRef = useRef<AbortController | null>(null);
   const mealSavedRef = useRef(false);
+  const cardioSavedRef = useRef(false);
   const { abandon: abandonEstimate } = ai;
 
   const abandon = useCallback(() => {
@@ -114,6 +124,60 @@ export function VoiceCommandProvider({ children }: { children: ReactNode }) {
       }
     },
     [openCoach, router]
+  );
+
+  const openWorkoutPreview = useCallback(
+    ({ templateId, planId }: Pick<WorkoutChoice, 'templateId' | 'planId'>) => {
+      setState(null);
+      setPendingVoiceAction({ kind: 'previewWorkout', templateId, planId });
+      router.navigate(NAV_DESTINATIONS.workouts.route);
+    },
+    [router]
+  );
+
+  const startWorkout = useCallback(
+    async (transcript: string, said: string) => {
+      const generation = generationRef.current;
+      setState({ kind: 'working', transcript });
+      try {
+        const lookup = await findSpokenWorkout(said);
+        if (generation !== generationRef.current) {
+          return;
+        }
+
+        if (lookup.kind === 'found') {
+          openWorkoutPreview(lookup.workout);
+
+          return;
+        }
+
+        // The list would show saved workouts, which a locked area never does.
+        if (lookup.kind === 'choose' && !isLocked('workout')) {
+          setState({ kind: 'workoutChoice', transcript, workouts: lookup.workouts });
+
+          return;
+        }
+
+        setState(null);
+        if (lookup.kind === 'active') {
+          router.navigate(`/app/workout/workout-session?workoutLogId=${lookup.workoutLogId}`);
+          showSnackbar('success', t('voiceInput.command.workoutActive'));
+
+          return;
+        }
+
+        router.navigate(NAV_DESTINATIONS.workouts.route);
+      } catch (error) {
+        if (generation !== generationRef.current) {
+          return;
+        }
+
+        setState(null);
+        handleError(error, 'voiceCommand.findWorkout', { showSnackbar: false });
+        showError(t(FAILED_MESSAGE.messageKey));
+      }
+    },
+    [isLocked, openWorkoutPreview, router, showError, showSnackbar, t]
   );
 
   const startMealEstimate = useCallback(
@@ -187,9 +251,57 @@ export function VoiceCommandProvider({ children }: { children: ReactNode }) {
           startMealEstimate(transcript, action);
 
           return;
+        case 'askCoach':
+          setState(null);
+          openCoach({ composerText: action.text });
+
+          return;
+        case 'openCamera': {
+          setState(null);
+          // A photo mode only while the AI in use reads photos; else what the camera button opens.
+          const mode = action.mode === 'barcode-scan' || isAiMealPhotoEnabled ? action.mode : null;
+          openCamera({ ...(mode ? { mode } : {}), showBarcodeTextSearch: true });
+
+          return;
+        }
+
+        case 'startWorkout':
+          void startWorkout(transcript, action.said);
+
+          return;
+        case 'previewWorkout':
+          openWorkoutPreview(action);
+
+          return;
+        case 'logCardio':
+          cardioSavedRef.current = false;
+          setState({
+            kind: 'cardio',
+            transcript,
+            initial: {
+              activity: action.activity,
+              distanceM: action.distanceM,
+              durationS: action.durationS,
+              // The day that was said, at the current time.
+              endedAt: combineLocalDateAndTime(action.day, new Date()),
+            },
+          });
+
+          return;
       }
     },
-    [isCycleActive, openScreen, router, showWrongTaskNotice, startMealEstimate]
+    [
+      isAiMealPhotoEnabled,
+      isCycleActive,
+      openCamera,
+      openCoach,
+      openScreen,
+      openWorkoutPreview,
+      router,
+      showWrongTaskNotice,
+      startMealEstimate,
+      startWorkout,
+    ]
   );
 
   const submit = useCallback(
@@ -207,6 +319,7 @@ export function VoiceCommandProvider({ children }: { children: ReactNode }) {
           const outcome = await interpretVoiceCommand(transcript, {
             signal: controller.signal,
             tool,
+            hasCamera,
           });
           if (generation !== generationRef.current) {
             return;
@@ -246,7 +359,7 @@ export function VoiceCommandProvider({ children }: { children: ReactNode }) {
 
       void run();
     },
-    [abandon, locale, perform, showError, t]
+    [abandon, hasCamera, locale, perform, showError, t]
   );
 
   const askCoach = useCallback(
@@ -298,6 +411,25 @@ export function VoiceCommandProvider({ children }: { children: ReactNode }) {
     }
   }, [close, showWrongTaskNotice]);
 
+  // Leaving the workout list without a pick: the command may have been the wrong one.
+  const cancel = useCallback(() => {
+    close();
+    if (state?.kind === 'workoutChoice') {
+      showWrongTaskNotice();
+    }
+  }, [close, showWrongTaskNotice, state?.kind]);
+
+  const cardioLogged = useCallback(() => {
+    cardioSavedRef.current = true;
+  }, []);
+
+  const closeCardio = useCallback(() => {
+    close();
+    if (!cardioSavedRef.current) {
+      showWrongTaskNotice();
+    }
+  }, [close, showWrongTaskNotice]);
+
   const value = useMemo(() => ({ ready, submit }), [ready, submit]);
 
   return (
@@ -306,12 +438,15 @@ export function VoiceCommandProvider({ children }: { children: ReactNode }) {
       <VoiceCommandModal
         state={state}
         progress={ai.progress}
-        onCancel={close}
+        onCancel={cancel}
         onAskCoach={askCoach}
         onPickTool={submit}
         onWeighInClose={closeWeighIn}
         onLogMeal={logMeal}
         onMealReviewClose={closeMealReview}
+        onPickWorkout={openWorkoutPreview}
+        onCardioLogged={cardioLogged}
+        onCardioClose={closeCardio}
       />
     </VoiceCommandContext.Provider>
   );

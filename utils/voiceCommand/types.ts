@@ -1,5 +1,7 @@
-import type { NavItemKey } from '@/constants/settings';
+import type { CameraMode } from '@/constants/camera';
+import type { NavItemKey, Units } from '@/constants/settings';
 import type { MealType } from '@/database/models/NutritionLog';
+import type { CardioActivity } from '@/utils/cardioEnergy';
 
 /**
  * The type model of voice commands: what a spoken sentence can become. Pure (type-only imports).
@@ -17,6 +19,10 @@ export const VOICE_ACTION_TOOLS = [
   'log_meal',
   'add_note',
   'go_to',
+  'ask_coach',
+  'start_workout',
+  'log_cardio',
+  'open_camera',
 ] as const;
 export type VoiceActionTool = (typeof VOICE_ACTION_TOOLS)[number];
 
@@ -88,6 +94,13 @@ export const VOICE_SCREENS = [
 ] as const satisfies readonly (NavItemKey | 'home')[];
 export type VoiceScreen = (typeof VOICE_SCREENS)[number];
 
+/** What a spoken sentence can ask the camera to be used for. Each is one of `CameraMode`. */
+export const VOICE_CAMERA_MODES = ['barcode', 'food_photo', 'label'] as const;
+export type VoiceCameraMode = (typeof VOICE_CAMERA_MODES)[number];
+
+/** The activities voice can log. Any other sport runs nothing. */
+export const VOICE_ACTIVITIES = ['walk', 'run'] as const satisfies readonly CardioActivity[];
+
 /** One command per hold. The reply is a list so that raising this needs no new schema shape. */
 export const MAX_VOICE_COMMANDS = 1;
 export const MAX_VOICE_FOOD_CHARS = 80;
@@ -110,6 +123,8 @@ export type VoiceCommand = {
   /** The words of a note. */
   text: string | null;
   screen: VoiceScreen | null;
+  cameraMode: VoiceCameraMode | null;
+  activity: CardioActivity | null;
 };
 
 export type VoiceAction =
@@ -148,7 +163,24 @@ export type VoiceAction =
       description: string;
     }
   | { kind: 'addNote'; body: string }
-  | { kind: 'goTo'; screen: VoiceScreen };
+  | { kind: 'goTo'; screen: VoiceScreen }
+  /** The sentence goes into the coach's composer; the person sends it. */
+  | { kind: 'askCoach'; text: string }
+  /** `mode` null: what the bottom bar's camera button opens. */
+  | { kind: 'openCamera'; mode: CameraMode | null }
+  /** Which workout is meant is looked up on the phone, from what was said. */
+  | { kind: 'startWorkout'; said: string }
+  /** Made by the app once a workout is found, never by a resolver: the preview to show. */
+  | { kind: 'previewWorkout'; templateId: string; planId?: string }
+  | {
+      kind: 'logCardio';
+      /** Local midnight of the day the walk or run happened. */
+      day: Date;
+      activity: CardioActivity;
+      /** Null when none was said: the sheet starts at zero. */
+      distanceM: number | null;
+      durationS: number | null;
+    };
 
 export type VoiceActionKind = VoiceAction['kind'];
 
@@ -165,6 +197,8 @@ export type VoiceResolveContext = {
   transcript: string;
   /** The account's weight unit, used when none was said. */
   weightUnit: VoiceWeightUnit;
+  /** The account's unit system, for a distance said without a unit. */
+  units: Units;
   /** The person picked the tool: resolve to an action, leaving out whatever cannot be used. */
   chosen?: boolean;
 };
